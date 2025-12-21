@@ -5,16 +5,29 @@
 }
 
 :root {
-  --primary: #667eea;
-  --primary-dark: #764ba2;
-  --bg-dark: #0f172a;
-  --bg-card: #1e293b;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --border: #334155;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+  /* Binance-inspired color scheme */
+  --binance-yellow: #f0b90b;
+  --binance-yellow-dark: #c9940a;
+  --binance-yellow-light: #f8d12f;
+  --bg-dark: #0b0e11;
+  --bg-card: #1e2329;
+  --bg-card-hover: #2b3139;
+  --text-primary: #eaecef;
+  --text-secondary: #848e9c;
+  --text-muted: #5e6673;
+  --border: #2b3139;
+  --border-light: #3d4552;
+  --success: #0ecb81;
+  --success-dark: #0ba869;
+  --danger: #f6465d;
+  --danger-dark: #d9304e;
+  --warning: #f0b90b;
+  --info: #1890ff;
+  --gradient-yellow: linear-gradient(135deg, #f0b90b 0%, #f8d12f 100%);
+  --gradient-success: linear-gradient(135deg, #0ecb81 0%, #0ba869 100%);
+  --gradient-danger: linear-gradient(135deg, #f6465d 0%, #d9304e 100%);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-hover: 0 4px 16px rgba(240, 185, 11, 0.15);
 }
 
 body {
@@ -26,6 +39,7 @@ body {
   background: var(--bg-dark);
   color: var(--text-primary);
   min-height: 100vh;
+  line-height: 1.5;
 }
 
 code {
