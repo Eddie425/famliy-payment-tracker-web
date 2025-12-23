@@ -71,7 +71,7 @@ export default function Admin() {
   }
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('zh-TW', {
       style: 'currency',
       currency: 'TWD',
       minimumFractionDigits: 0,
