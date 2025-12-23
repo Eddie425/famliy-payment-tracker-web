@@ -59,7 +59,7 @@ export default function Admin() {
   const fetchDebts = async () => {
     try {
       setLoading(true)
-      const response = await api.get('/admin/debts?includeInstallments=true')
+      const response = await api.get('/api/admin/debts?includeInstallments=true')
       setDebts(response.data)
       setError(null)
     } catch (err) {
@@ -203,7 +203,7 @@ export default function Admin() {
               onDelete={async (id) => {
                 if (confirm('Are you sure you want to delete this debt? This action cannot be undone.')) {
                   try {
-                    await api.delete(`/admin/debts/${id}`)
+                    await api.delete(`/api/admin/debts/${id}`)
                     fetchDebts()
                   } catch (err) {
                     alert('Failed to delete debt')
@@ -271,7 +271,7 @@ function CreateDebtForm({ onClose, onSuccess }: { onClose: () => void, onSuccess
         payload.totalAmount = Math.round(parseFloat(formData.totalAmount) * 100)
       }
       
-      await api.post('/admin/debts', payload)
+      await api.post('/api/admin/debts', payload)
       onSuccess()
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to create debt')
@@ -979,7 +979,7 @@ function EditInstallmentModal({
       if (formData.dueDate) {
         payload.dueDate = formData.dueDate
       }
-      await api.put(`/admin/installments/${installment.id}`, payload)
+      await api.put(`/api/admin/installments/${installment.id}`, payload)
       onSuccess()
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to update installment')
