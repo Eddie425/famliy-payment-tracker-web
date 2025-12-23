@@ -234,26 +234,43 @@ export default function Admin() {
 }
 
 function CreateDebtForm({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
+  const [inputMode, setInputMode] = useState<'total' | 'monthly'>('monthly') // Default to monthly
   const [formData, setFormData] = useState({
     title: '',
     totalAmount: '',
+    monthlyPaymentAmount: '',
     installmentCount: '',
     startDate: '',
     interestRate: '',
   })
   const [submitting, setSubmitting] = useState(false)
 
+  // Calculate preview
+  const calculatedTotal = formData.monthlyPaymentAmount && formData.installmentCount
+    ? (parseFloat(formData.monthlyPaymentAmount) * parseInt(formData.installmentCount)).toFixed(2)
+    : ''
+  const calculatedMonthly = formData.totalAmount && formData.installmentCount
+    ? (parseFloat(formData.totalAmount) / parseInt(formData.installmentCount)).toFixed(2)
+    : ''
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
     try {
-      const payload = {
+      const payload: any = {
         title: formData.title,
-        totalAmount: Math.round(parseFloat(formData.totalAmount) * 100), // Convert to cents
         installmentCount: parseInt(formData.installmentCount),
         startDate: formData.startDate,
         interestRate: formData.interestRate ? parseFloat(formData.interestRate) : null,
       }
+      
+      // Add either totalAmount or monthlyPaymentAmount based on input mode
+      if (inputMode === 'monthly' && formData.monthlyPaymentAmount) {
+        payload.monthlyPaymentAmount = Math.round(parseFloat(formData.monthlyPaymentAmount) * 100)
+      } else if (inputMode === 'total' && formData.totalAmount) {
+        payload.totalAmount = Math.round(parseFloat(formData.totalAmount) * 100)
+      }
+      
       await api.post('/admin/debts', payload)
       onSuccess()
     } catch (err: any) {
@@ -337,34 +354,135 @@ function CreateDebtForm({ onClose, onSuccess }: { onClose: () => void, onSuccess
               />
             </div>
 
-            <div>
-              <label style={{
-                display: 'block',
-                marginBottom: '0.5rem',
-                color: 'var(--text-secondary)',
-                fontSize: '0.9rem',
-              }}>
-                Total Amount (USD) *
-              </label>
-              <input
-                type="number"
-                required
-                min="0"
-                step="0.01"
-                value={formData.totalAmount}
-                onChange={(e) => setFormData({ ...formData, totalAmount: e.target.value })}
-                placeholder="3000.00"
+            {/* Input Mode Toggle */}
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem',
+              marginBottom: '1rem',
+              padding: '0.75rem',
+              background: 'var(--bg-dark)',
+              borderRadius: '8px',
+              border: '1px solid var(--border)',
+            }}>
+              <button
+                type="button"
+                onClick={() => setInputMode('monthly')}
                 style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  background: 'var(--bg-dark)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '8px',
-                  color: 'var(--text-primary)',
-                  fontSize: '0.95rem',
+                  flex: 1,
+                  padding: '0.5rem',
+                  background: inputMode === 'monthly' ? 'rgba(240, 185, 11, 0.2)' : 'transparent',
+                  border: `1px solid ${inputMode === 'monthly' ? 'var(--binance-yellow)' : 'var(--border)'}`,
+                  borderRadius: '6px',
+                  color: inputMode === 'monthly' ? 'var(--binance-yellow)' : 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontWeight: inputMode === 'monthly' ? '600' : '500',
+                  fontSize: '0.9rem',
                 }}
-              />
+              >
+                Monthly Payment
+              </button>
+              <button
+                type="button"
+                onClick={() => setInputMode('total')}
+                style={{
+                  flex: 1,
+                  padding: '0.5rem',
+                  background: inputMode === 'total' ? 'rgba(240, 185, 11, 0.2)' : 'transparent',
+                  border: `1px solid ${inputMode === 'total' ? 'var(--binance-yellow)' : 'var(--border)'}`,
+                  borderRadius: '6px',
+                  color: inputMode === 'total' ? 'var(--binance-yellow)' : 'var(--text-secondary)',
+                  cursor: 'pointer',
+                  fontWeight: inputMode === 'total' ? '600' : '500',
+                  fontSize: '0.9rem',
+                }}
+              >
+                Total Amount
+              </button>
             </div>
+
+            {inputMode === 'monthly' ? (
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.9rem',
+                }}>
+                  Monthly Payment Amount (USD) *
+                </label>
+                <input
+                  type="number"
+                  required={inputMode === 'monthly'}
+                  min="0"
+                  step="0.01"
+                  value={formData.monthlyPaymentAmount}
+                  onChange={(e) => setFormData({ ...formData, monthlyPaymentAmount: e.target.value })}
+                  placeholder="2230.00"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    background: 'var(--bg-dark)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    fontSize: '0.95rem',
+                  }}
+                />
+                {calculatedTotal && (
+                  <div style={{
+                    marginTop: '0.5rem',
+                    padding: '0.5rem',
+                    background: 'rgba(240, 185, 11, 0.1)',
+                    borderRadius: '6px',
+                    fontSize: '0.85rem',
+                    color: 'var(--binance-yellow)',
+                  }}>
+                    💡 Total will be: ${calculatedTotal} ({formData.installmentCount || '?'} installments × ${formData.monthlyPaymentAmount || '0'})
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                <label style={{
+                  display: 'block',
+                  marginBottom: '0.5rem',
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.9rem',
+                }}>
+                  Total Amount (USD) *
+                </label>
+                <input
+                  type="number"
+                  required={inputMode === 'total'}
+                  min="0"
+                  step="0.01"
+                  value={formData.totalAmount}
+                  onChange={(e) => setFormData({ ...formData, totalAmount: e.target.value })}
+                  placeholder="3000.00"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    background: 'var(--bg-dark)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    color: 'var(--text-primary)',
+                    fontSize: '0.95rem',
+                  }}
+                />
+                {calculatedMonthly && (
+                  <div style={{
+                    marginTop: '0.5rem',
+                    padding: '0.5rem',
+                    background: 'rgba(240, 185, 11, 0.1)',
+                    borderRadius: '6px',
+                    fontSize: '0.85rem',
+                    color: 'var(--binance-yellow)',
+                  }}>
+                    💡 Monthly payment will be: ${calculatedMonthly} ({formData.totalAmount || '0'} ÷ {formData.installmentCount || '?'} installments)
+                  </div>
+                )}
+              </div>
+            )}
 
             <div>
               <label style={{

@@ -102,3 +102,5 @@ The frontend connects to the backend API endpoints:
 - Payment marking functionality
 - Debt creation and management
 - Installment adjustment features
+
+
