@@ -204,9 +204,14 @@ export default function Admin() {
                 if (confirm('Are you sure you want to delete this debt? This action cannot be undone.')) {
                   try {
                     await api.delete(`/api/admin/debts/${id}`)
+                    // Immediately remove from UI for better UX
+                    setDebts(prevDebts => prevDebts.filter(debt => debt.id !== id))
+                    // Also refresh from server to ensure consistency
                     fetchDebts()
-                  } catch (err) {
-                    alert('Failed to delete debt')
+                  } catch (err: any) {
+                    alert(err.response?.data?.message || 'Failed to delete debt')
+                    // Refresh on error to ensure UI is in sync
+                    fetchDebts()
                   }
                 }
               }}
@@ -273,6 +278,8 @@ function CreateDebtForm({ onClose, onSuccess }: { onClose: () => void, onSuccess
       
       await api.post('/api/admin/debts', payload)
       onSuccess()
+      // Refresh the debts list after successful creation
+      // onSuccess already calls fetchDebts, but this ensures it happens
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to create debt')
     } finally {
