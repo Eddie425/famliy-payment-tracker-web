@@ -73,7 +73,7 @@ export default function Admin() {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'TWD',
       minimumFractionDigits: 0,
     }).format(amount / 100)
   }
@@ -408,7 +408,7 @@ function CreateDebtForm({ onClose, onSuccess }: { onClose: () => void, onSuccess
                   color: 'var(--text-secondary)',
                   fontSize: '0.9rem',
                 }}>
-                  Monthly Payment Amount (USD) *
+                  Monthly Payment Amount (TWD) *
                 </label>
                 <input
                   type="number"
@@ -449,7 +449,7 @@ function CreateDebtForm({ onClose, onSuccess }: { onClose: () => void, onSuccess
                   color: 'var(--text-secondary)',
                   fontSize: '0.9rem',
                 }}>
-                  Total Amount (USD) *
+                  Total Amount (TWD) *
                 </label>
                 <input
                   type="number"
@@ -1042,7 +1042,7 @@ function EditInstallmentModal({
                 color: 'var(--text-secondary)',
                 fontSize: '0.9rem',
               }}>
-                Amount (USD)
+                Amount (TWD)
               </label>
               <input
                 type="number"
